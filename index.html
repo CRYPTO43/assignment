@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vision Simulation Solutions</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        color: #333;
+      }
+
+      header {
+        background-color: #007bff;
+        color: #fff;
+        text-align: center;
+        padding: 20px;
+      }
+
+      section {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        margin: 0;
+      }
+
+      h2 {
+        color: #007bff;
+      }
+
+      ol {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      li {
+        margin-bottom: 10px;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+
+      label {
+        margin-bottom: 5px;
+        color: #333;
+      }
+
+      input {
+        padding: 8px;
+        margin-bottom: 10px;
+      }
+
+      button {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+      }
+
+      #progress-container {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      #progress-bar {
+        width: 100%;
+        background-color: #e0e0e0;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      #progress {
+        width: 0;
+        height: 30px;
+        background-color: #007bff;
+        border-radius: 5px;
+        transition: width 0.3s ease;
+      }
+
+      #progress-message {
+        margin-left: 10px;
+        font-weight: bold;
+      }
+
+      #progress-container.active {
+        display: flex;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Vision Simulation Solutions</h1>
+      <p>
+        Aims to provide cutting-edge simulation services to help businesses and
+        individuals make informed decisions, optimize strategies, and enhance
+        learning experiences in a risk-free virtual environment.
+      </p>
+    </header>
+
+    <section>
+      <h2>Services Offered:</h2>
+      <ol>
+        <li>Business Strategy Simulation</li>
+        <li>Training and Development Simulations</li>
+        <li>Financial Planning Simulations</li>
+        <li>Educational Simulations</li>
+        <li>Healthcare Simulations</li>
+      </ol>
+
+      <h2>Financial Details:</h2>
+      <form id="calculation-form">
+        <label for="startingBalance">Starting Balance ($):</label>
+        <input
+          type="text"
+          id="startingBalance"
+          name="startingBalance"
+          placeholder="Enter starting balance"
+        />
+
+        <label for="operatingCost">Operating Cost ($):</label>
+        <input
+          type="text"
+          id="operatingCost"
+          name="operatingCost"
+          placeholder="Enter operating cost"
+        />
+
+        <label for="investment">Investment ($):</label>
+        <input
+          type="text"
+          id="investment"
+          name="investment"
+          placeholder="Enter investment"
+        />
+
+        <label for="stockAvailable">Stock Available ($):</label>
+        <input
+          type="text"
+          id="stockAvailable"
+          name="stockAvailable"
+          placeholder="Enter stock available"
+        />
+
+        <label for="capital">Capital ($):</label>
+        <input
+          type="text"
+          id="capital"
+          name="capital"
+          placeholder="Enter capital"
+        />
+
+        <label for="dailyExpenses">Daily Expenses ($):</label>
+        <input
+          type="text"
+          id="dailyExpenses"
+          name="dailyExpenses"
+          placeholder="Enter daily expenses"
+        />
+
+        <label for="pettyCash">Petty Cash ($):</label>
+        <input
+          type="text"
+          id="pettyCash"
+          name="pettyCash"
+          placeholder="Enter petty cash"
+        />
+
+        <label for="bigExpenses">Big Expenses ($):</label>
+        <input
+          type="text"
+          id="bigExpenses"
+          name="bigExpenses"
+          placeholder="Enter big expenses"
+        />
+
+        <div id="progress-container">
+          <div id="progress-bar">
+            <div id="progress"></div>
+          </div>
+          <div id="progress-message">Calculating...</div>
+        </div>
+        <div id="result-message"></div>
+
+        <button type="button" onclick="startLoading()">Calculate</button>
+      </form>
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        function startLoading() {
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress');
+            const progressMessage = document.getElementById('progress-message');
+            const resultMessage = document.getElementById('result-message');
+            const calculateButton = document.getElementById('calculate-button');
+    
+            progressContainer.classList.add('active');
+            progressMessage.innerText = 'Calculating...';
+    
+            const formData = getFormData();
+            resetFormNumbers();
+    
+            const totalIncome = calculateTotalIncome(formData);
+            const totalExpenses = calculateTotalExpenses(formData);
+    
+            let profit = totalIncome - totalExpenses;
+    
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressContainer.classList.remove('active');
+                        progressBar.style.width = '0';
+                        updateButtonAndText(profit);
+                    }, 500); // Delay to show completion
+                }
+    
+                if (profit >= 0) {
+                    progressMessage.innerText = `Profit: $${profit.toFixed(2)}`;
+                } else {
+                    progressMessage.innerText = `Loss: $${Math.abs(profit).toFixed(2)}`;
+                }
+    
+                progressBar.style.width = width + '%';
+                width += 10;
+            }, 300); // 300 milliseconds interval
+        }
+    
+        function getFormData() {
+            const form = document.getElementById('calculation-form');
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = parseFloat(value) || 0; // Convert values to float or default to 0
+            });
+            return data;
+        }
+    
+        function resetFormNumbers() {
+            const form = document.getElementById('calculation-form');
+            const inputFields = form.querySelectorAll('input[type="text"]');
+            inputFields.forEach((input) => {
+                input.value = "";
+            });
+        }
+    
+
+      function calculateTotalIncome(data) {
+        // Adjust this based on your actual income calculation logic
+        console.log(data);
+        return (
+          data.startingBalance +
+          data.investment +
+          data.operatingCost +
+          data.investment +
+          data.stockAvailable
+        );
+      }
+
+      function calculateTotalExpenses(data) {
+        // Adjust this based on your actual expenses calculation logic
+        return (
+          data.dailyExpenses + data.bigExpenses + data.pettyCash + data.capital
+        );
+      }
+      function updateButtonAndText(profit) {
+        const calculateButton = document.getElementById('calculate-button');
+        const resultMessage = document.getElementById('result-message');
+
+        if (profit >= 0) {
+            resultMessage.innerText = `The firm is making a profit of $${profit.toFixed(2)} a year.`;
+        } else {
+            resultMessage.innerText = `The firm is incurring a loss of $${Math.abs(profit).toFixed(2)} a year.`;
+        }
+
+        calculateButton.innerText = "New Calculation";
+        calculateButton.onclick = function () {
+            location.reload(); // Refresh the page on button click
+        };
+      }
+    </script>
+  </body>
+</html>
