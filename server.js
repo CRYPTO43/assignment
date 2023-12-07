@@ -5,6 +5,7 @@ const socketIo = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
+const HTTP_PORT = process.env.PORT || 8080;
 
 app.use(express.static(__dirname + '/public'));
 
@@ -15,6 +16,6 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
 });
 
-server.listen(3000, () => {
+server.listen(HTTP_PORT, () => {
   console.log('Server is running on port 3000');
 });
