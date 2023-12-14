@@ -100,6 +100,20 @@
       #progress-container.active {
         display: flex;
       }
+      #video-container {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        padding-top: 56.25%; /* 16:9 aspect ratio */
+      }
+
+      iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
     </style>
   </head>
 
@@ -112,6 +126,25 @@
         learning experiences in a risk-free virtual environment.
       </p>
     </header>
+    <section>
+      <h2>Our Team</h2>
+      <ol>
+        <li>Rasmeet Kour</li>
+        <li>Manjinder Singh</li>
+        <li>Sourab Jhally</li>
+        <li>Prabhjot Kaur</li>
+        <li>Prabhjot Kaur</li>
+        <li>Ramandeep Kaur</li>
+        <li>Ramandeep Kaur</li>
+        <li>Prabhjeet Singh</li>
+        <li>Mandeep Singh</li>
+        <li>Rahul</li>
+        <li>Shiv Kumar Saini</li>
+        <li>Veerpal Kaur</li>
+        <li>Veerpal Kaur</li>
+        <li>Simran Kaur</li>
+      </ol>
+    </section>
 
     <section>
       <h2>Services Offered:</h2>
@@ -122,12 +155,26 @@
         <li>Educational Simulations</li>
         <li>Healthcare Simulations</li>
       </ol>
+    </section>
+    <section>
+      <section>
+        <h2>Video Illustration</h2>
+        <div id="video-container">
+          <iframe
+            src="https://www.youtube.com/embed/4Rnkt7f9zcE"
+            title=""
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </section>
 
       <h2>Financial Details:</h2>
       <form id="calculation-form">
         <label for="startingBalance">Starting Balance ($):</label>
         <input
-          type="text"
+          type="number"
           id="startingBalance"
           name="startingBalance"
           placeholder="Enter starting balance"
@@ -135,7 +182,7 @@
 
         <label for="operatingCost">Operating Cost ($):</label>
         <input
-          type="text"
+          type="number"
           id="operatingCost"
           name="operatingCost"
           placeholder="Enter operating cost"
@@ -143,7 +190,7 @@
 
         <label for="investment">Investment ($):</label>
         <input
-          type="text"
+          type="number"
           id="investment"
           name="investment"
           placeholder="Enter investment"
@@ -151,7 +198,7 @@
 
         <label for="stockAvailable">Stock Available ($):</label>
         <input
-          type="text"
+          type="number"
           id="stockAvailable"
           name="stockAvailable"
           placeholder="Enter stock available"
@@ -159,7 +206,7 @@
 
         <label for="capital">Capital ($):</label>
         <input
-          type="text"
+          type="number"
           id="capital"
           name="capital"
           placeholder="Enter capital"
@@ -167,7 +214,7 @@
 
         <label for="dailyExpenses">Daily Expenses ($):</label>
         <input
-          type="text"
+          type="number"
           id="dailyExpenses"
           name="dailyExpenses"
           placeholder="Enter daily expenses"
@@ -175,7 +222,7 @@
 
         <label for="pettyCash">Petty Cash ($):</label>
         <input
-          type="text"
+          type="number"
           id="pettyCash"
           name="pettyCash"
           placeholder="Enter petty cash"
@@ -183,7 +230,7 @@
 
         <label for="bigExpenses">Big Expenses ($):</label>
         <input
-          type="text"
+          type="number"
           id="bigExpenses"
           name="bigExpenses"
           placeholder="Enter big expenses"
@@ -202,66 +249,65 @@
     </section>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script>
-        const socket = io();
+      const socket = io();
 
-        function startLoading() {
-            const progressContainer = document.getElementById('progress-container');
-            const progressBar = document.getElementById('progress');
-            const progressMessage = document.getElementById('progress-message');
-            const resultMessage = document.getElementById('result-message');
-            const calculateButton = document.getElementById('calculate-button');
-    
-            progressContainer.classList.add('active');
-            progressMessage.innerText = 'Calculating...';
-    
-            const formData = getFormData();
-            resetFormNumbers();
-    
-            const totalIncome = calculateTotalIncome(formData);
-            const totalExpenses = calculateTotalExpenses(formData);
-    
-            let profit = totalIncome - totalExpenses;
-    
-            let width = 0;
-            const interval = setInterval(() => {
-                if (width >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        progressContainer.classList.remove('active');
-                        progressBar.style.width = '0';
-                        updateButtonAndText(profit);
-                    }, 500); // Delay to show completion
-                }
-    
-                if (profit >= 0) {
-                    progressMessage.innerText = `Profit: $${profit.toFixed(2)}`;
-                } else {
-                    progressMessage.innerText = `Loss: $${Math.abs(profit).toFixed(2)}`;
-                }
-    
-                progressBar.style.width = width + '%';
-                width += 10;
-            }, 300); // 300 milliseconds interval
-        }
-    
-        function getFormData() {
-            const form = document.getElementById('calculation-form');
-            const formData = new FormData(form);
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = parseFloat(value) || 0; // Convert values to float or default to 0
-            });
-            return data;
-        }
-    
-        function resetFormNumbers() {
-            const form = document.getElementById('calculation-form');
-            const inputFields = form.querySelectorAll('input[type="text"]');
-            inputFields.forEach((input) => {
-                input.value = "";
-            });
-        }
-    
+      function startLoading() {
+        const progressContainer = document.getElementById("progress-container");
+        const progressBar = document.getElementById("progress");
+        const progressMessage = document.getElementById("progress-message");
+        const resultMessage = document.getElementById("result-message");
+        const calculateButton = document.getElementById("calculate-button");
+
+        progressContainer.classList.add("active");
+        progressMessage.innerText = "Calculating...";
+
+        const formData = getFormData();
+        resetFormNumbers();
+
+        const totalIncome = calculateTotalIncome(formData);
+        const totalExpenses = calculateTotalExpenses(formData);
+
+        let profit = totalIncome - totalExpenses;
+
+        let width = 0;
+        const interval = setInterval(() => {
+          if (width >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+              progressContainer.classList.remove("active");
+              progressBar.style.width = "0";
+              updateButtonAndText(profit);
+            }, 500); // Delay to show completion
+          }
+
+          if (profit >= 0) {
+            progressMessage.innerText = `Profit: $${profit.toFixed(2)}`;
+          } else {
+            progressMessage.innerText = `Loss: $${Math.abs(profit).toFixed(2)}`;
+          }
+
+          progressBar.style.width = width + "%";
+          width += 10;
+        }, 300); // 300 milliseconds interval
+      }
+
+      function getFormData() {
+        const form = document.getElementById("calculation-form");
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((value, key) => {
+          data[key] = parseFloat(value) || 0; // Convert values to float or default to 0
+        });
+        return data;
+      }
+
+      function resetFormNumbers() {
+        const form = document.getElementById("calculation-form");
+        const inputFields = form.querySelectorAll('input[type="number"]');
+        inputFields.forEach((input) => {
+          input.value = "";
+        });
+      }
 
       function calculateTotalIncome(data) {
         // Adjust this based on your actual income calculation logic
@@ -282,18 +328,22 @@
         );
       }
       function updateButtonAndText(profit) {
-        const calculateButton = document.getElementById('calculate-button');
-        const resultMessage = document.getElementById('result-message');
+        const calculateButton = document.getElementById("calculate-button");
+        const resultMessage = document.getElementById("result-message");
 
         if (profit >= 0) {
-            resultMessage.innerText = `The firm is making a profit of $${profit.toFixed(2)} a year.`;
+          resultMessage.innerText = `The firm is making a profit of $${profit.toFixed(
+            2
+          )} a year.`;
         } else {
-            resultMessage.innerText = `The firm is incurring a loss of $${Math.abs(profit).toFixed(2)} a year.`;
+          resultMessage.innerText = `The firm is incurring a loss of $${Math.abs(
+            profit
+          ).toFixed(2)} a year.`;
         }
 
         calculateButton.innerText = "New Calculation";
         calculateButton.onclick = function () {
-            location.reload(); // Refresh the page on button click
+          location.reload(); // Refresh the page on button click
         };
       }
     </script>
